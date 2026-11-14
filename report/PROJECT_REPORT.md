@@ -148,7 +148,7 @@ Three custom MapReduce programs were written in Java and built using Apache Mave
 
 ## 6. Apache Hive Analysis
 
-Using Beeline JDBC (`jdbc:hive2://localhost:10000`), an external table `ecommerce_orders` was defined to map directly onto `/ecommerce/input` with `"skip.header.line.count"="1"`.
+Using Beeline JDBC (`jdbc:hive2://localhost:10000`), an external table `ecommerce_orders` was defined to map directly onto `/ecommerce/input`.
 
 ### Key Analytical Findings:
 1. **Category Volume vs. Revenue**:

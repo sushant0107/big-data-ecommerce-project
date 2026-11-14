@@ -8,7 +8,6 @@
 -- 1. Create External Table Mapped to HDFS
 -- --------------------------------------------------------------------
 -- Points directly to the HDFS dataset located at /ecommerce/input
--- Skips the CSV header row during query parsing
 CREATE EXTERNAL TABLE IF NOT EXISTS ecommerce_orders (
     order_id STRING,
     customer_id STRING,
@@ -24,8 +23,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS ecommerce_orders (
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 STORED AS TEXTFILE
-LOCATION '/ecommerce/input'
-TBLPROPERTIES ("skip.header.line.count"="1");
+LOCATION '/ecommerce/input';
 
 -- --------------------------------------------------------------------
 -- 2. Verify Table Creation & Data Sampling

@@ -18,8 +18,8 @@ An end-to-end distributed Big Data analytics pipeline for an e-commerce platform
 - [HDFS Data Ingestion](#-hdfs-data-ingestion)
 - [MapReduce Analytics](#-mapreduce-analytics)
   - [1. Order Count by Category](#1-order-count-by-category-categorycount)
-  - [2. Payment Method Frequency](#2-payment-method-frequency-paymentmethodcount)
-  - [3. Total Sales by Category](#3-total-sales-by-category-categorysales)
+  - [2. Total Sales by Category](#2-total-sales-by-category-categorysales)
+  - [3. Payment Method Frequency](#3-payment-method-frequency-paymentmethodcount)
 - [Apache Hive Data Warehousing](#-apache-hive-data-warehousing)
 - [Results Summary & Cross-Validation](#-results-summary--cross-validation)
 - [Web UIs and Monitoring](#-web-uis-and-monitoring)
@@ -248,11 +248,11 @@ hdfs dfs -cat /ecommerce/out_payment/part-r-00000
 
 Using Beeline JDBC to connect to HiveServer2:
 ```bash
-docker exec -it hive-server beeline -u jdbc:hive2://localhost:10000 -n hive -p hive
+docker exec -it hive-server beeline -u jdbc:hive2://localhost:10000 -n root
 ```
 
 ### 1. Create External Table
-An external table is created pointing directly to `/ecommerce/input`, skipping the CSV header row:
+An external table is created pointing directly to `/ecommerce/input` (the CSV has no header row):
 ```sql
 CREATE EXTERNAL TABLE IF NOT EXISTS ecommerce_orders (
     order_id STRING,
@@ -269,8 +269,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS ecommerce_orders (
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 STORED AS TEXTFILE
-LOCATION '/ecommerce/input'
-TBLPROPERTIES ("skip.header.line.count"="1");
+LOCATION '/ecommerce/input';
 ```
 ![Hive Table Creation](hive/Screenshot%202026-11-14%20235715.png)
 
