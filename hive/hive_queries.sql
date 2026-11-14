@@ -1,42 +1,77 @@
--- Task 4.1: Create Hive Table
-CREATE TABLE IF NOT EXISTS orders (
-    Order_ID STRING,
-    Customer_ID STRING,
-    Order_Date STRING,
-    City STRING,
-    Product_Category STRING,
-    Quantity INT,
-    Unit_Price DOUBLE,
-    Discount_Amount DOUBLE,
-    Total_Amount DOUBLE,
-    Payment_Method STRING
+-- ====================================================================
+-- Big Data E-Commerce Analytics - Apache Hive SQL Queries
+-- Course: Big Data Technologies
+-- Execution Environment: Apache Hive 2.3.2 via Beeline (Hadoop 3.2.1)
+-- ====================================================================
+
+-- --------------------------------------------------------------------
+-- 1. Create External Table Mapped to HDFS
+-- --------------------------------------------------------------------
+-- Points directly to the HDFS dataset located at /ecommerce/input
+-- Skips the CSV header row during query parsing
+CREATE EXTERNAL TABLE IF NOT EXISTS ecommerce_orders (
+    order_id STRING,
+    customer_id STRING,
+    order_date STRING,
+    city STRING,
+    category STRING,
+    quantity INT,
+    price DOUBLE,
+    discount DOUBLE,
+    total_amount DOUBLE,
+    payment_method STRING
 )
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
-STORED AS TEXTFILE;
+STORED AS TEXTFILE
+LOCATION '/ecommerce/input'
+TBLPROPERTIES ("skip.header.line.count"="1");
 
--- Task 4.1: Load Dataset from HDFS
-LOAD DATA INPATH '/ecommerce/orders.csv' OVERWRITE INTO TABLE orders;
+-- --------------------------------------------------------------------
+-- 2. Verify Table Creation & Data Sampling
+-- --------------------------------------------------------------------
+SELECT * FROM ecommerce_orders LIMIT 5;
 
--- Task 4.2: Query 1 - Total Number of Orders
-SELECT COUNT(*) AS total_orders 
-FROM orders;
+-- --------------------------------------------------------------------
+-- 3. Analytics Query 1: Total Orders Count by Product Category
+-- --------------------------------------------------------------------
+-- Evaluates transaction volume across different product categories
+SELECT category, COUNT(*) AS total_orders
+FROM ecommerce_orders
+GROUP BY category;
 
--- Task 4.3: Query 2 - Total Sales by Category
-SELECT Product_Category, ROUND(SUM(Total_Amount), 2) AS total_sales
-FROM orders
-GROUP BY Product_Category
-ORDER BY total_sales DESC;
+-- --------------------------------------------------------------------
+-- 4. Analytics Query 2: Payment Method Transaction Breakdown
+-- --------------------------------------------------------------------
+-- Analyzes customer payment preferences across all orders
+SELECT payment_method, COUNT(*) AS total_transactions
+FROM ecommerce_orders
+GROUP BY payment_method;
 
--- Task 4.4: Query 3 - Orders by City
-SELECT City, COUNT(*) AS number_of_orders
-FROM orders
-GROUP BY City
-ORDER BY number_of_orders DESC;
+-- --------------------------------------------------------------------
+-- 5. Analytics Query 3: Total Sales Revenue by Product Category
+-- --------------------------------------------------------------------
+-- Calculates total financial revenue generated per product category
+SELECT category, ROUND(SUM(total_amount), 2) AS total_sales
+FROM ecommerce_orders
+GROUP BY category;
 
--- Task 4.5: Query 4 - Most Frequently Used Payment Method
-SELECT Payment_Method, COUNT(*) AS usage_count
-FROM orders
-GROUP BY Payment_Method
-ORDER BY usage_count DESC
-LIMIT 1;
+-- --------------------------------------------------------------------
+-- 6. Analytics Query 4: Top 5 Revenue-Generating Cities
+-- --------------------------------------------------------------------
+-- Identifies top geographic revenue contributors
+SELECT city, ROUND(SUM(total_amount), 2) AS revenue
+FROM ecommerce_orders
+GROUP BY city
+ORDER BY revenue DESC
+LIMIT 5;
+
+-- --------------------------------------------------------------------
+-- 7. Analytics Query 5: Overall Platform Summary
+-- --------------------------------------------------------------------
+-- Aggregates total order count and total gross merchandise value
+SELECT 
+    COUNT(*) AS total_orders, 
+    ROUND(SUM(total_amount), 2) AS total_revenue,
+    ROUND(AVG(total_amount), 2) AS average_order_value
+FROM ecommerce_orders;
