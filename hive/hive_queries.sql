@@ -31,6 +31,7 @@ TBLPROPERTIES ("skip.header.line.count"="1");
 -- 2. Verify Table Creation & Data Sampling
 -- --------------------------------------------------------------------
 SELECT * FROM ecommerce_orders LIMIT 5;
+SELECT COUNT(*) AS total_orders FROM ecommerce_orders;
 
 -- --------------------------------------------------------------------
 -- 3. Analytics Query 1: Total Orders Count by Product Category
@@ -44,27 +45,28 @@ GROUP BY category;
 -- 4. Analytics Query 2: Payment Method Transaction Breakdown
 -- --------------------------------------------------------------------
 -- Analyzes customer payment preferences across all orders
-SELECT payment_method, COUNT(*) AS total_transactions
+SELECT payment_method, COUNT(*) AS total_orders
 FROM ecommerce_orders
-GROUP BY payment_method;
+GROUP BY payment_method
+ORDER BY total_orders DESC;
 
 -- --------------------------------------------------------------------
 -- 5. Analytics Query 3: Total Sales Revenue by Product Category
 -- --------------------------------------------------------------------
--- Calculates total financial revenue generated per product category
-SELECT category, ROUND(SUM(total_amount), 2) AS total_sales
+-- Calculates total financial revenue generated per product category (Quantity * Unit Price)
+SELECT category, ROUND(SUM(quantity * price), 2) AS total_sales
 FROM ecommerce_orders
-GROUP BY category;
+GROUP BY category
+ORDER BY total_sales DESC;
 
 -- --------------------------------------------------------------------
--- 6. Analytics Query 4: Top 5 Revenue-Generating Cities
+-- 6. Analytics Query 4: Total Orders by City
 -- --------------------------------------------------------------------
--- Identifies top geographic revenue contributors
-SELECT city, ROUND(SUM(total_amount), 2) AS revenue
+-- Evaluates order volume by Turkish metropolitan city
+SELECT city, COUNT(*) AS total_orders
 FROM ecommerce_orders
 GROUP BY city
-ORDER BY revenue DESC
-LIMIT 5;
+ORDER BY total_orders DESC;
 
 -- --------------------------------------------------------------------
 -- 7. Analytics Query 5: Overall Platform Summary
@@ -72,6 +74,6 @@ LIMIT 5;
 -- Aggregates total order count and total gross merchandise value
 SELECT 
     COUNT(*) AS total_orders, 
-    ROUND(SUM(total_amount), 2) AS total_revenue,
-    ROUND(AVG(total_amount), 2) AS average_order_value
+    ROUND(SUM(quantity * price), 2) AS total_revenue,
+    ROUND(AVG(quantity * price), 2) AS average_order_value
 FROM ecommerce_orders;

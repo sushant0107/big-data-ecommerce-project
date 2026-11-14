@@ -81,23 +81,22 @@ big-data-ecommerce-project/
 │   └── Screenshot 2026-11-14 204635.png
 ├── hive/                           # Hive DDL, queries, and execution screenshots
 │   ├── hive_queries.sql            # Hive table schema & analytical queries
-│   ├── Screenshot 2026-11-14 225155.png
-│   ├── Screenshot 2026-11-14 225216.png
-│   ├── Screenshot 2026-11-14 225230.png
-│   ├── Screenshot 2026-11-14 225239.png
-│   ├── Screenshot 2026-11-14 225247.png
-│   └── Screenshot 2026-11-14 225254.png
+│   ├── Screenshot 2026-11-14 235715.png
+│   ├── Screenshot 2026-11-14 235729.png
+│   ├── Screenshot 2026-11-14 235741.png
+│   ├── Screenshot 2026-11-14 235753.png
+│   └── Screenshot 2026-11-14 235801.png
 ├── mapreduce/                      # MapReduce JAR and execution screenshots
 │   ├── ecommerce-mapreduce-1.0-SNAPSHOT.jar
-│   ├── Screenshot 2026-11-14 203906.png
-│   ├── Screenshot 2026-11-14 203931.png
-│   ├── Screenshot 2026-11-14 203938.png
-│   ├── Screenshot 2026-11-14 203949.png
-│   ├── Screenshot 2026-11-14 204015.png
-│   ├── Screenshot 2026-11-14 204022.png
-│   ├── Screenshot 2026-11-14 204034.png
-│   ├── Screenshot 2026-11-14 204050.png
-│   └── Screenshot 2026-11-14 204055.png
+│   ├── Screenshot 2026-11-14 235229.png
+│   ├── Screenshot 2026-11-14 235249.png
+│   ├── Screenshot 2026-11-14 235316.png
+│   ├── Screenshot 2026-11-14 235347.png
+│   ├── Screenshot 2026-11-14 235358.png
+│   ├── Screenshot 2026-11-14 235412.png
+│   ├── Screenshot 2026-11-14 235441.png
+│   ├── Screenshot 2026-11-14 235452.png
+│   └── Screenshot 2026-11-14 235510.png
 ├── ecommerce-mapreduce/            # Maven Java project source code
 │   ├── pom.xml                     # Maven project descriptor & Hadoop dependencies
 │   └── src/main/java/
@@ -196,52 +195,52 @@ The MapReduce programs are written in Java using the Hadoop MapReduce API (`org.
 - **Combiner & Reducer**: Aggregates the total order counts for each category.
 
 ```bash
-hadoop jar /mapreduce/ecommerce-mapreduce-1.0-SNAPSHOT.jar CategoryCount /ecommerce/cleaned_orders.csv /ecommerce/out_cat_count
+hadoop jar /mapreduce/ecommerce-mapreduce-1.0-SNAPSHOT.jar CategoryCount /ecommerce/input/cleaned_orders.csv /ecommerce/out_cat_count
 ```
-![CategoryCount Job Start](mapreduce/Screenshot%202026-11-14%20203906.png)
-![CategoryCount Job Completion](mapreduce/Screenshot%202026-11-14%20203931.png)
+![CategoryCount Job Start](mapreduce/Screenshot%202026-11-14%20235229.png)
+![CategoryCount Job Completion](mapreduce/Screenshot%202026-11-14%20235249.png)
 
 **View Output:**
 ```bash
 hdfs dfs -cat /ecommerce/out_cat_count/part-r-00000
 ```
-![CategoryCount Output](mapreduce/Screenshot%202026-11-14%20203938.png)
+![CategoryCount Output](mapreduce/Screenshot%202026-11-14%20235316.png)
 
 ---
 
-### 2. Payment Method Frequency (`PaymentMethodCount`)
-- **Mapper**: Extracts `Payment_Method` (column 9) and emits `(PaymentMethod, 1)`.
-- **Combiner & Reducer**: Computes the distribution of orders by payment gateway.
-
-```bash
-hadoop jar /mapreduce/ecommerce-mapreduce-1.0-SNAPSHOT.jar PaymentMethodCount /ecommerce/cleaned_orders.csv /ecommerce/out_payment
-```
-![PaymentMethodCount Job Start](mapreduce/Screenshot%202026-11-14%20203949.png)
-![PaymentMethodCount Job Completion](mapreduce/Screenshot%202026-11-14%20204015.png)
-
-**View Output:**
-```bash
-hdfs dfs -cat /ecommerce/out_payment/part-r-00000
-```
-![PaymentMethodCount Output](mapreduce/Screenshot%202026-11-14%20204022.png)
-
----
-
-### 3. Total Sales by Category (`CategorySales`)
-- **Mapper**: Extracts `Product_Category` (column 4) and `Total_Amount` (column 8), emitting `(Category, Total_Amount)`.
+### 2. Total Sales by Category (`CategorySales`)
+- **Mapper**: Extracts `Product_Category` (column 4) and calculates gross sales as `Quantity` (column 5) $\times$ `Price` (column 6), emitting `(Category, Quantity * Price)`.
 - **Combiner & Reducer**: Aggregates total gross revenue per product category rounded to two decimal places.
 
 ```bash
-hadoop jar /mapreduce/ecommerce-mapreduce-1.0-SNAPSHOT.jar CategorySales /ecommerce/cleaned_orders.csv /ecommerce/out_cat_sales
+hadoop jar /mapreduce/ecommerce-mapreduce-1.0-SNAPSHOT.jar CategorySales /ecommerce/input/cleaned_orders.csv /ecommerce/out_cat_sales
 ```
-![CategorySales Job Start](mapreduce/Screenshot%202026-11-14%20204034.png)
-![CategorySales Job Completion](mapreduce/Screenshot%202026-11-14%20204050.png)
+![CategorySales Job Start](mapreduce/Screenshot%202026-11-14%20235347.png)
+![CategorySales Job Completion](mapreduce/Screenshot%202026-11-14%20235358.png)
 
 **View Output:**
 ```bash
 hdfs dfs -cat /ecommerce/out_cat_sales/part-r-00000
 ```
-![CategorySales Output](mapreduce/Screenshot%202026-11-14%20204055.png)
+![CategorySales Output](mapreduce/Screenshot%202026-11-14%20235412.png)
+
+---
+
+### 3. Payment Method Frequency (`PaymentMethodCount`)
+- **Mapper**: Extracts `Payment_Method` (column 9) and emits `(PaymentMethod, 1)`.
+- **Combiner & Reducer**: Computes the distribution of orders by payment gateway.
+
+```bash
+hadoop jar /mapreduce/ecommerce-mapreduce-1.0-SNAPSHOT.jar PaymentMethodCount /ecommerce/input/cleaned_orders.csv /ecommerce/out_payment
+```
+![PaymentMethodCount Job Start](mapreduce/Screenshot%202026-11-14%20235441.png)
+![PaymentMethodCount Job Completion](mapreduce/Screenshot%202026-11-14%20235452.png)
+
+**View Output:**
+```bash
+hdfs dfs -cat /ecommerce/out_payment/part-r-00000
+```
+![PaymentMethodCount Output](mapreduce/Screenshot%202026-11-14%20235510.png)
 
 ---
 
@@ -273,47 +272,40 @@ STORED AS TEXTFILE
 LOCATION '/ecommerce/input'
 TBLPROPERTIES ("skip.header.line.count"="1");
 ```
-![Hive Table Creation](hive/Screenshot%202026-11-14%20225155.png)
+![Hive Table Creation](hive/Screenshot%202026-11-14%20235715.png)
 
-### 2. Verify Table & Data Sample
+### 2. Verify Table Record Count
 ```sql
-SELECT * FROM ecommerce_orders LIMIT 5;
+SELECT COUNT(*) AS total_orders FROM ecommerce_orders;
 ```
-![Hive Select Sample](hive/Screenshot%202026-11-14%20225216.png)
+![Hive Total Orders Count](hive/Screenshot%202026-11-14%20235729.png)
 
-### 3. Query 1: Total Orders by Category
+### 3. Query 1: Total Sales Revenue by Category
 ```sql
-SELECT category, COUNT(*) AS total_orders
+SELECT category, ROUND(SUM(quantity * price), 2) AS total_sales
 FROM ecommerce_orders
-GROUP BY category;
+GROUP BY category
+ORDER BY total_sales DESC;
 ```
-![Hive Query 1 Orders by Category](hive/Screenshot%202026-11-14%20225230.png)
+![Hive Query 1 Total Sales by Category](hive/Screenshot%202026-11-14%20235741.png)
 
-### 4. Query 2: Payment Method Distribution
+### 4. Query 2: Order Distribution by City
 ```sql
-SELECT payment_method, COUNT(*) AS total_transactions
-FROM ecommerce_orders
-GROUP BY payment_method;
-```
-![Hive Query 2 Payment Methods](hive/Screenshot%202026-11-14%20225239.png)
-
-### 5. Query 3: Total Sales Revenue by Category
-```sql
-SELECT category, ROUND(SUM(total_amount), 2) AS total_sales
-FROM ecommerce_orders
-GROUP BY category;
-```
-![Hive Query 3 Total Sales by Category](hive/Screenshot%202026-11-14%20225247.png)
-
-### 6. Query 4: Top 5 Revenue-Generating Cities
-```sql
-SELECT city, ROUND(SUM(total_amount), 2) AS revenue
+SELECT city, COUNT(*) AS total_orders
 FROM ecommerce_orders
 GROUP BY city
-ORDER BY revenue DESC
-LIMIT 5;
+ORDER BY total_orders DESC;
 ```
-![Hive Query 4 Top 5 Cities by Revenue](hive/Screenshot%202026-11-14%20225254.png)
+![Hive Query 2 Orders by City](hive/Screenshot%202026-11-14%20235753.png)
+
+### 5. Query 3: Payment Method Distribution
+```sql
+SELECT payment_method, COUNT(*) AS total_orders
+FROM ecommerce_orders
+GROUP BY payment_method
+ORDER BY total_orders DESC;
+```
+![Hive Query 3 Payment Methods](hive/Screenshot%202026-11-14%20235801.png)
 
 ---
 
@@ -324,34 +316,32 @@ The results from custom Java MapReduce jobs and declarative Hive queries match w
 ### 1. Product Category Analysis
 | Category | Order Volume (MapReduce) | Order Volume (Hive) | Total Sales ($) (MapReduce) | Total Sales ($) (Hive) |
 |---|---|---|---|---|
-| **Electronics** | 624 | 624 | $2,328,806.81 | $2,328,806.81 |
-| **Home & Garden** | 621 | 621 | $908,348.86 | $908,348.86 |
-| **Sports** | 667 | 667 | $754,563.56 | $754,563.56 |
-| **Fashion** | 622 | 622 | $375,214.93 | $375,214.93 |
-| **Toys** | 610 / 609* | 609 | $223,142.48 / $223,088.20* | $223,088.20 |
-| **Beauty** | 621 | 621 | $156,584.74 | $156,584.74 |
-| **Food** | 619 | 619 | $96,138.67 | $96,138.67 |
-| **Books** | 616 | 616 | $72,744.52 | $72,744.52 |
-
-*\*Note: Hive automatically skips the CSV header row (`Product_Category`) using `skip.header.line.count=1`.*
+| **Electronics** | 624 | 624 | $2,391,002.99 | $2,391,002.99 |
+| **Home & Garden** | 621 | 621 | $930,368.69 | $930,368.69 |
+| **Sports** | 667 | 667 | $772,840.62 | $772,840.62 |
+| **Fashion** | 622 | 622 | $383,755.13 | $383,755.13 |
+| **Toys** | 610 | 610 | $228,410.33 | $228,410.33 |
+| **Beauty** | 621 | 621 | $160,345.92 | $160,345.92 |
+| **Food** | 619 | 619 | $98,351.13 | $98,351.13 |
+| **Books** | 616 | 616 | $74,733.78 | $74,733.78 |
 
 ### 2. Payment Method Breakdown
 | Payment Method | Transaction Count | Share (%) |
 |---|---|---|
 | **Credit Card** | 2,012 | 40.24% |
-| **Debit Card** | 1,264 / 1,265 | 25.30% |
+| **Debit Card** | 1,265 | 25.30% |
 | **Digital Wallet** | 965 | 19.30% |
 | **Bank Transfer** | 510 | 10.20% |
 | **Cash On Delivery** | 248 | 4.96% |
 
-### 3. Top 5 Revenue Cities
-| Rank | City | Total Revenue ($) |
-|---|---|---|
-| 1 | **Istanbul** | $1,334,122.56 |
-| 2 | **Ankara** | $657,535.82 |
-| 3 | **Izmir** | $567,534.67 |
-| 4 | **Bursa** | $459,022.03 |
-| 5 | **Adana** | $427,059.63 |
+### 3. Top Cities by Order Volume
+| Rank | City | Total Orders | Share (%) |
+|---|---|---|---|
+| 1 | **Istanbul** | 1,284 | 25.68% |
+| 2 | **Ankara** | 735 | 14.70% |
+| 3 | **Izmir** | 600 | 12.00% |
+| 4 | **Bursa** | 496 | 9.92% |
+| 5 | **Adana** | 378 | 7.56% |
 
 ---
 

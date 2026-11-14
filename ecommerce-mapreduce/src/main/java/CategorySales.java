@@ -22,7 +22,7 @@ public class CategorySales {
             if (fields.length >= 10) {
                 try {
                     category.set(fields[4].trim()); // Column 4: Category
-                    double sales = Double.parseDouble(fields[8].trim()); // Column 8: Total_Amount
+                    double sales = Double.parseDouble(fields[5].trim()) * Double.parseDouble(fields[6].trim()); // Quantity x Price
                     amount.set(sales);
                     context.write(category, amount);
                 } catch (NumberFormatException e) { }
