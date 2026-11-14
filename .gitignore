@@ -1,0 +1,11 @@
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# PostgreSQL cluster data directory
+hive/postgresql-data/
+
+# Build targets
+target/
+**/target/
