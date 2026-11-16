@@ -20,6 +20,7 @@ An end-to-end distributed Big Data analytics pipeline for an e-commerce platform
   - [1. Order Count by Category](#1-order-count-by-category-categorycount)
   - [2. Total Sales by Category](#2-total-sales-by-category-categorysales)
   - [3. Payment Method Frequency](#3-payment-method-frequency-paymentmethodcount)
+  - [4. Total Sales by City](#4-total-sales-by-city-citysales)
 - [Apache Hive Data Warehousing](#-apache-hive-data-warehousing)
 - [Results Summary & Cross-Validation](#-results-summary--cross-validation)
 - [Web UIs and Monitoring](#-web-uis-and-monitoring)
@@ -244,6 +245,26 @@ hdfs dfs -cat /ecommerce/out_payment/part-r-00000
 
 ---
 
+### 4. Total Sales by City (`CitySales`)
+- **Mapper**: Extracts `City` (column 3) and emits `(City, Quantity * Price)`. Malformed rows are counted in a `MALFORMED` Hadoop counter instead of being silently dropped.
+- **Combiner**: Computes unrounded partial sums on the map side.
+- **Reducer**: Produces the final revenue per city, rounded to two decimal places.
+
+```bash
+hadoop jar /mapreduce/ecommerce-mapreduce-1.0-SNAPSHOT.jar CitySales /ecommerce/input/cleaned_orders.csv /ecommerce/out_city_sales
+hdfs dfs -cat /ecommerce/out_city_sales/part-r-00000
+```
+
+Cross-check in Hive:
+```sql
+SELECT city, ROUND(SUM(quantity * price), 2) AS total_sales
+FROM ecommerce_orders
+GROUP BY city
+ORDER BY total_sales DESC;
+```
+
+---
+
 ## 🐝 Apache Hive Data Warehousing
 
 Using Beeline JDBC to connect to HiveServer2:
@@ -341,6 +362,22 @@ The results from custom Java MapReduce jobs and declarative Hive queries match w
 | 3 | **Izmir** | 600 | 12.00% |
 | 4 | **Bursa** | 496 | 9.92% |
 | 5 | **Adana** | 378 | 7.56% |
+
+### 4. Sales Revenue by City (`CitySales`)
+Expected totals, computed from `cleaned_orders.csv` as `SUM(quantity * price)` per city:
+
+| Rank | City | Total Sales ($) |
+|---|---|---|
+| 1 | **Istanbul** | $1,364,283.98 |
+| 2 | **Ankara** | $674,285.76 |
+| 3 | **Izmir** | $580,199.45 |
+| 4 | **Bursa** | $471,091.79 |
+| 5 | **Adana** | $438,046.61 |
+| 6 | **Konya** | $352,755.54 |
+| 7 | **Gaziantep** | $326,500.40 |
+| 8 | **Antalya** | $324,819.79 |
+| 9 | **Kayseri** | $323,433.69 |
+| 10 | **Eskisehir** | $184,391.58 |
 
 ---
 

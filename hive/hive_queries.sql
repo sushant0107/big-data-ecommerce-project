@@ -75,3 +75,12 @@ SELECT
     ROUND(SUM(quantity * price), 2) AS total_revenue,
     ROUND(AVG(quantity * price), 2) AS average_order_value
 FROM ecommerce_orders;
+
+-- --------------------------------------------------------------------
+-- 8. Analytics Query 6: Total Sales Revenue by City
+-- --------------------------------------------------------------------
+-- Cross-validates the CitySales MapReduce job (Quantity * Unit Price per city)
+SELECT city, ROUND(SUM(quantity * price), 2) AS total_sales
+FROM ecommerce_orders
+GROUP BY city
+ORDER BY total_sales DESC;
